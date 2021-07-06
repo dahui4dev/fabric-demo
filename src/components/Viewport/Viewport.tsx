@@ -382,11 +382,27 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
         splitByGrapheme: true,
       }
     );
-    // let temp = shadowText4._wrapText(["5", "5", "9"], 40);
-    // let temp = shadowText4._splitTextIntoLines(
-    //   "这是 一个超长的看看能不嗯自己换行，要不然这也太扯了。"
-    // );
-    // shadowText4.set("text", temp);
+
+    // let imgElement = document.createElement("img");
+    // imgElement.id = "image";
+    // imgElement.src =
+    //   "https://img10.360buyimg.com/imagetools/jfs/t1/181452/20/9816/89925/60cc5d8bE21696b83/8c751323be8cdd48.gif";
+    // document.body.appendChild(imgElement);
+
+    fabric.Image.fromURL(
+      "https://img14.360buyimg.com/imagetools/jfs/t1/131932/17/19158/386467/5fcf7236E760a0923/e2ca061974b3fc32.jpg",
+      (img) => {
+        img.scale(0.5).set({
+          left: setLeft(3),
+          top: setTop(6),
+          backgroundColor: "orange",
+          width: 300,
+          height: 300,
+        });
+
+        canvas.add(img);
+      }
+    );
 
     // add all to canvas
     canvas.add(
@@ -420,91 +436,91 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
       shadowText4
     );
 
-    initMinimap();
-    updateMiniMapVP();
-
-    function createCanvasEl() {
-      let designSize = { width: window.innerWidth, height: window.innerHeight };
-      let originalVPT = canvas.viewportTransform;
-      // zoom to fit the canvas in the display canvas
-      let designRatio = fabric.util.findScaleToFit(designSize, canvas);
-
-      // zoom to fit the display the canvas in the miniMap.
-      let minimapRatio = fabric.util.findScaleToFit(canvas, miniMap);
-
-      let scaling = miniMap.getRetinaScaling();
-
-      let finalWidth = designSize.width * designRatio;
-      let finalHeight = designSize.height * designRatio;
-
-      canvas.viewportTransform = [
-        designRatio,
-        0,
-        0,
-        designRatio,
-        (canvas.getWidth() - finalWidth) / 2,
-        (canvas.getHeight() - finalHeight) / 2,
-      ];
-      let canvasEle = canvas.toCanvasElement(minimapRatio * scaling);
-      canvas.viewportTransform = originalVPT;
-      return canvasEle;
-    }
-
-    function updateMiniMap() {
-      let canvasEle = createCanvasEl();
-      miniMap.backgroundImage._element = canvasEle;
-      miniMap.requestRenderAll();
-    }
-
-    function updateMiniMapVP() {
-      let designSize = { width: window.innerWidth, height: window.innerHeight };
-      let rect = miniMap.getObjects()[0];
-      let designRatio = fabric.util.findScaleToFit(designSize, canvas);
-      let totalRatio = fabric.util.findScaleToFit(designSize, miniMap);
-      let finalRatio = designRatio / canvas.getZoom();
-      rect.scaleX = finalRatio;
-      rect.scaleY = finalRatio;
-      rect.top =
-        miniMap.backgroundImage.top -
-        (canvas.viewportTransform[5] * totalRatio) / canvas.getZoom();
-      rect.left =
-        miniMap.backgroundImage.left -
-        (canvas.viewportTransform[4] * totalRatio) / canvas.getZoom();
-      miniMap.requestRenderAll();
-    }
-
-    function initMinimap() {
-      let canvasEle = createCanvasEl();
-      let backgroundImage = new fabric.Image(canvasEle);
-      backgroundImage.scaleX = 1 / canvas.getRetinaScaling();
-      backgroundImage.scaleY = 1 / canvas.getRetinaScaling();
-      miniMap.centerObject(backgroundImage);
-      miniMap.backgroundColor = "white";
-      miniMap.backgroundImage = backgroundImage;
-      miniMap.requestRenderAll();
-      let minimapView = new fabric.Rect({
-        top: backgroundImage.top,
-        left: backgroundImage.left,
-        width: backgroundImage.width / canvas.getRetinaScaling(),
-        height: backgroundImage.height / canvas.getRetinaScaling(),
-        fill: "rgba(0, 0, 255, 0.3)",
-        cornerSize: 6,
-        transparentCorners: false,
-        strokeWidth: 0,
-      });
-      minimapView.controls = {
-        br: fabric.Object.prototype.controls.br,
-      };
-      miniMap.add(minimapView);
-    }
-
-    let debouncedMiniMap = _.debounce(updateMiniMap, 250);
-
-    canvas.on("object:modified", function (opt) {
-      console.log("-------object:modified----504---------", opt);
-
-      updateMiniMap();
-    });
+    // initMinimap();
+    // updateMiniMapVP();
+    //
+    // function createCanvasEl() {
+    //   let designSize = { width: window.innerWidth, height: window.innerHeight };
+    //   let originalVPT = canvas.viewportTransform;
+    //   // zoom to fit the canvas in the display canvas
+    //   let designRatio = fabric.util.findScaleToFit(designSize, canvas);
+    //
+    //   // zoom to fit the display the canvas in the miniMap.
+    //   let minimapRatio = fabric.util.findScaleToFit(canvas, miniMap);
+    //
+    //   let scaling = miniMap.getRetinaScaling();
+    //
+    //   let finalWidth = designSize.width * designRatio;
+    //   let finalHeight = designSize.height * designRatio;
+    //
+    //   canvas.viewportTransform = [
+    //     designRatio,
+    //     0,
+    //     0,
+    //     designRatio,
+    //     (canvas.getWidth() - finalWidth) / 2,
+    //     (canvas.getHeight() - finalHeight) / 2,
+    //   ];
+    //   let canvasEle = canvas.toCanvasElement(minimapRatio * scaling);
+    //   canvas.viewportTransform = originalVPT;
+    //   return canvasEle;
+    // }
+    //
+    // function updateMiniMap() {
+    //   let canvasEle = createCanvasEl();
+    //   miniMap.backgroundImage._element = canvasEle;
+    //   miniMap.requestRenderAll();
+    // }
+    //
+    // function updateMiniMapVP() {
+    //   let designSize = { width: window.innerWidth, height: window.innerHeight };
+    //   let rect = miniMap.getObjects()[0];
+    //   let designRatio = fabric.util.findScaleToFit(designSize, canvas);
+    //   let totalRatio = fabric.util.findScaleToFit(designSize, miniMap);
+    //   let finalRatio = designRatio / canvas.getZoom();
+    //   rect.scaleX = finalRatio;
+    //   rect.scaleY = finalRatio;
+    //   rect.top =
+    //     miniMap.backgroundImage.top -
+    //     (canvas.viewportTransform[5] * totalRatio) / canvas.getZoom();
+    //   rect.left =
+    //     miniMap.backgroundImage.left -
+    //     (canvas.viewportTransform[4] * totalRatio) / canvas.getZoom();
+    //   miniMap.requestRenderAll();
+    // }
+    //
+    // function initMinimap() {
+    //   let canvasEle = createCanvasEl();
+    //   let backgroundImage = new fabric.Image(canvasEle);
+    //   backgroundImage.scaleX = 1 / canvas.getRetinaScaling();
+    //   backgroundImage.scaleY = 1 / canvas.getRetinaScaling();
+    //   miniMap.centerObject(backgroundImage);
+    //   miniMap.backgroundColor = "white";
+    //   miniMap.backgroundImage = backgroundImage;
+    //   miniMap.requestRenderAll();
+    //   let minimapView = new fabric.Rect({
+    //     top: backgroundImage.top,
+    //     left: backgroundImage.left,
+    //     width: backgroundImage.width / canvas.getRetinaScaling(),
+    //     height: backgroundImage.height / canvas.getRetinaScaling(),
+    //     fill: "rgba(0, 0, 255, 0.3)",
+    //     cornerSize: 6,
+    //     transparentCorners: false,
+    //     strokeWidth: 0,
+    //   });
+    //   minimapView.controls = {
+    //     br: fabric.Object.prototype.controls.br,
+    //   };
+    //   miniMap.add(minimapView);
+    // }
+    //
+    // let debouncedMiniMap = _.debounce(updateMiniMap, 250);
+    //
+    // canvas.on("object:modified", function (opt) {
+    //   console.log("-------object:modified----504---------", opt);
+    //
+    //   updateMiniMap();
+    // });
 
     /* --------缩放-------------------------------------------------------------------- */
 
@@ -515,35 +531,37 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
       zoom *= 0.999 ** delta;
       if (zoom > 20) zoom = 20;
       if (zoom < 0.01) zoom = 0.01;
-      this.setZoom(zoom);
-      updateMiniMapVP();
+      canvas.setZoom(zoom);
+      // updateMiniMapVP();
       opt.e.preventDefault();
       opt.e.stopPropagation();
     });
     canvas.on("mouse:down", function (opt) {
       let evt = opt.e;
       if (evt.altKey === true) {
-        this.isDragging = true;
-        this.selection = false;
-        this.lastPosX = evt.clientX;
-        this.lastPosY = evt.clientY;
+        canvas.isDragging = true;
+        canvas.selection = false;
+        canvas.lastPosX = evt.clientX;
+        canvas.lastPosY = evt.clientY;
+
+        canvas.requestRenderAll();
       }
     });
     canvas.on("mouse:move", function (opt) {
-      if (this.isDragging) {
+      if (canvas.isDragging) {
         let e = opt.e;
-        let vpt = this.viewportTransform;
-        vpt[4] += e.clientX - this.lastPosX;
-        vpt[5] += e.clientY - this.lastPosY;
-        this.requestRenderAll();
-        updateMiniMapVP();
-        this.lastPosX = e.clientX;
-        this.lastPosY = e.clientY;
+        let vpt = canvas.viewportTransform;
+        vpt[4] += e.clientX - canvas.lastPosX;
+        vpt[5] += e.clientY - canvas.lastPosY;
+        canvas.requestRenderAll();
+        // updateMiniMapVP();
+        canvas.lastPosX = e.clientX;
+        canvas.lastPosY = e.clientY;
       }
     });
     canvas.on("mouse:up", function (opt) {
-      this.isDragging = false;
-      this.selection = true;
+      canvas.isDragging = false;
+      canvas.selection = true;
     });
 
     canvas.renderAll();

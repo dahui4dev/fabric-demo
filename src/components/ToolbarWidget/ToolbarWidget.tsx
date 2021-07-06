@@ -173,7 +173,7 @@ export function ToolbarWidget(props: { children?: ReactNode }) {
           key="模板"
           className={`toolbar-widget-btn wb-btn ${
             activeKey === "模板" && "tool-active-btn"
-          }`}
+          } fontColorGrey`}
           onClick={clickTool.bind(this, "模板")}
         >
           模板
@@ -182,7 +182,7 @@ export function ToolbarWidget(props: { children?: ReactNode }) {
           key="表格"
           className={`toolbar-widget-btn wb-btn ${
             activeKey === "表格" && "tool-active-btn"
-          }`}
+          } fontColorGrey`}
           onClick={clickTool.bind(this, "表格")}
         >
           表格
@@ -191,7 +191,7 @@ export function ToolbarWidget(props: { children?: ReactNode }) {
           key="脑图"
           className={`toolbar-widget-btn wb-btn ${
             activeKey === "脑图" && "tool-active-btn"
-          }`}
+          } fontColorGrey`}
           onClick={clickTool.bind(this, "脑图")}
         >
           脑图
@@ -200,7 +200,7 @@ export function ToolbarWidget(props: { children?: ReactNode }) {
           key="画板"
           className={`toolbar-widget-btn wb-btn ${
             activeKey === "画板" && "tool-active-btn"
-          }`}
+          } fontColorGrey`}
           onClick={clickTool.bind(this, "画板")}
         >
           画板
