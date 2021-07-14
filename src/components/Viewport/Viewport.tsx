@@ -176,6 +176,8 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
     let group_ = new fabric.Group([circle_, text_], {
       left: setLeft(5),
       top: setTop(2),
+      stroke: "blue",
+      strokeWidth: 2,
       // angle: -10
     });
 
@@ -214,44 +216,44 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
       perPixelTargetFind: false,
     });
 
-    let line1 = new fabric.Polyline(
-      [
-        { x: 10, y: 150 },
-        { x: 140, y: 150 },
-      ],
-      {
-        stroke: "#98d727",
-        strokeWidth: 2,
-        left: setLeft(1),
-        top: setTop(4),
-      }
-    );
-
-    let line2 = new fabric.Polyline(
-      [
-        { x: 150, y: 10 },
-        { x: 150, y: 140 },
-      ],
-      {
-        stroke: "blue",
-        strokeWidth: 2,
-        left: setLeft(2),
-        top: setTop(4),
-      }
-    );
-    let line3 = new fabric.Polyline(
-      [
-        { x: 10, y: 10 },
-        { x: 130, y: 150 },
-      ],
-      {
-        stroke: "blue",
-        strokeDashArray: [10, 5, 2, 5],
-        strokeWidth: 2,
-        left: setLeft(3),
-        top: setTop(4),
-      }
-    );
+    // let line1 = new fabric.Polyline(
+    //   [
+    //     { x: 10, y: 150 },
+    //     { x: 140, y: 150 },
+    //   ],
+    //   {
+    //     stroke: "#98d727",
+    //     strokeWidth: 2,
+    //     left: setLeft(1),
+    //     top: setTop(4),
+    //   }
+    // );
+    //
+    // let line2 = new fabric.Polyline(
+    //   [
+    //     { x: 150, y: 10 },
+    //     { x: 150, y: 140 },
+    //   ],
+    //   {
+    //     stroke: "blue",
+    //     strokeWidth: 2,
+    //     left: setLeft(2),
+    //     top: setTop(4),
+    //   }
+    // );
+    // let line3 = new fabric.Polyline(
+    //   [
+    //     { x: 10, y: 10 },
+    //     { x: 130, y: 150 },
+    //   ],
+    //   {
+    //     stroke: "blue",
+    //     strokeDashArray: [10, 5, 2, 5],
+    //     strokeWidth: 2,
+    //     left: setLeft(3),
+    //     top: setTop(4),
+    //   }
+    // );
 
     // 多边形
     let poly = new fabric.Polyline(
@@ -388,21 +390,20 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
     // imgElement.src =
     //   "https://img10.360buyimg.com/imagetools/jfs/t1/181452/20/9816/89925/60cc5d8bE21696b83/8c751323be8cdd48.gif";
     // document.body.appendChild(imgElement);
+    const myImg =
+      "https://img14.360buyimg.com/imagetools/jfs/t1/131932/17/19158/386467/5fcf7236E760a0923/e2ca061974b3fc32.jpg";
 
-    fabric.Image.fromURL(
-      "https://img14.360buyimg.com/imagetools/jfs/t1/131932/17/19158/386467/5fcf7236E760a0923/e2ca061974b3fc32.jpg",
-      (img) => {
-        img.scale(0.5).set({
-          left: setLeft(3),
-          top: setTop(6),
-          backgroundColor: "orange",
-          width: 300,
-          height: 300,
-        });
+    fabric.Image.fromURL(myImg, (oImg) => {
+      oImg.scale(0.3).set({
+        left: setLeft(3),
+        top: setTop(6),
+        backgroundColor: "orange",
+        width: oImg._element.naturalWidth,
+        height: oImg._element.naturalHeight,
+      });
 
-        canvas.add(img);
-      }
-    );
+      canvas.add(oImg);
+    });
 
     // add all to canvas
     canvas.add(
@@ -420,9 +421,9 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
       triangle,
       triangle1,
       triangle2,
-      line1,
-      line2,
-      line3,
+      // line1,
+      // line2,
+      // line3,
       poly,
       poly1,
       italicText,
@@ -435,6 +436,63 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
       shadowText3,
       shadowText4
     );
+
+    function makeCircle(left, top, line1, line2, line3, line4) {
+      var c = new fabric.Circle({
+        left: left,
+        top: top,
+        strokeWidth: 5,
+        radius: 2,
+        fill: "#fff",
+        stroke: "#666",
+      });
+      c.hasControls = c.hasBorders = false;
+
+      c.line1 = line1;
+      c.line2 = line2;
+      c.line3 = line3;
+      c.line4 = line4;
+
+      return c;
+    }
+
+    function makeLine(coords) {
+      return new fabric.Line(coords, {
+        fill: "red",
+        stroke: "red",
+        strokeWidth: 5,
+        selectable: true,
+        evented: true,
+      });
+    }
+
+    var line = makeLine([250, 125, 250, 175]),
+      line2 = makeLine([250, 175, 250, 250]),
+      line3 = makeLine([250, 250, 300, 350]),
+      line4 = makeLine([250, 250, 200, 350]),
+      line5 = makeLine([250, 175, 175, 225]),
+      line6 = makeLine([250, 175, 325, 225]);
+
+    canvas.add(line, line2, line3, line4, line5, line6);
+
+    canvas.add(
+      makeCircle(line.get("x1"), line.get("y1"), null, line),
+      makeCircle(line.get("x2"), line.get("y2"), line, line2, line5, line6),
+      makeCircle(line2.get("x2"), line2.get("y2"), line2, line3, line4),
+      makeCircle(line3.get("x2"), line3.get("y2"), line3),
+      makeCircle(line4.get("x2"), line4.get("y2"), line4),
+      makeCircle(line5.get("x2"), line5.get("y2"), line5),
+      makeCircle(line6.get("x2"), line6.get("y2"), line6)
+    );
+
+    canvas.on("object:moving", function (e) {
+      var p = e.target;
+      p.line1 && p.line1.set({ x2: p.left, y2: p.top });
+      p.line2 && p.line2.set({ x1: p.left, y1: p.top });
+      p.line3 && p.line3.set({ x1: p.left, y1: p.top });
+      p.line4 && p.line4.set({ x1: p.left, y1: p.top });
+      canvas.renderAll();
+    });
 
     // initMinimap();
     // updateMiniMapVP();
