@@ -1,6 +1,10 @@
 import { IEngineProps } from "../types";
 import { Event, uid } from "../utils";
 import { fabric } from "fabric";
+import { IObjectDrawer } from "./IObjectDrawer";
+import { LineDrawer } from "./LineDrawer";
+import { DrawingMode } from "./DrawingMode";
+import { CursorMode } from "./CursorMode";
 
 const controlRender = (ctx, left, top, styleOverride, fabricObject) => {
   const l = fabric.util.toFixed(fabricObject.left, 1);
@@ -26,23 +30,54 @@ const controlRender = (ctx, left, top, styleOverride, fabricObject) => {
   ctx.restore();
 };
 
-export class Engine extends Event {
+export class Engine {
   id: string;
 
-  props: IEngineProps<Engine>;
+  canvas: fabric.Canvas;
 
-  canvas: any;
-  miniMap: any;
+  isDown: boolean;
+
+  private cursorMode: CursorMode;
+  private _drawer: IObjectDrawer;
+  readonly drawerOptions: fabric.IObjectOptions;
+  private readonly drawers: IObjectDrawer[];
+  private object: fabric.Object;
+
+  // props: IEngineProps<Engine>;
+  // miniMap: any;
 
   constructor(props: IEngineProps<Engine>) {
-    super(props);
+    // super(props);
 
-    this.props = {
-      ...Engine.defaultProps,
-      ...props,
-    };
-    this.init();
+    // this.props = {
+    //   ...Engine.defaultProps,
+    //   ...props,
+    // };
     this.id = uid();
+
+    this.init();
+    this.canvas = new fabric.Canvas("c", {
+      containerClass: "design",
+      width: window.innerWidth,
+      height: window.innerHeight,
+      stopContextMenu: true,
+      selection: false,
+    });
+
+    // this.miniMap = this.getMiniMap();
+
+    this.cursorMode = CursorMode.Draw;
+    this.drawers = [new LineDrawer()];
+    this._drawer = this.drawers[DrawingMode.Line];
+    this.drawerOptions = {
+      stroke: "black",
+      strokeWidth: 1,
+      selectable: true,
+      strokeUniform: true,
+    };
+    this.isDown = false;
+
+    this.initializeCanvasEvents();
   }
 
   init() {
@@ -58,47 +93,98 @@ export class Engine extends Event {
       cursorStyle: "pointer",
       render: controlRender,
     });
-
-    this.canvas = this.getCanvas();
-    this.miniMap = this.getMiniMap();
-
-    console.log("--------init---31---------", this.canvas);
   }
 
-  getCanvas() {
-    if (this.canvas) {
-      return this.canvas;
-    } else {
-      return new fabric.Canvas("c", {
-        containerClass: "design",
-        width: window.innerWidth,
-        height: window.innerHeight,
-        stopContextMenu: true,
-      });
+  private initializeCanvasEvents() {
+    this.canvas.on("selection:created", (o) => {
+      console.log("--------selection:created---100---------", this.cursorMode);
+
+      this.cursorMode = CursorMode.Select;
+      //sets currently selected object
+      this.object = o.target;
+    });
+
+    this.canvas.on("selection:updated", (o) => {
+      console.log("--------selection:updated---100---------", this.cursorMode);
+    });
+
+    this.canvas.on("selection:cleared", (o) => {
+      console.log("--------selection:cleared---100---------", this.cursorMode);
+      this.cursorMode = CursorMode.Draw;
+    });
+
+    this.canvas.on("mouse:down", (o) => {
+      const e = <MouseEvent>o.e;
+
+      const pointer = this.canvas.getPointer(o.e);
+      this.mouseDown(pointer.x, pointer.y);
+    });
+
+    this.canvas.on("mouse:move", (o) => {
+      const pointer = this.canvas.getPointer(o.e);
+      this.mouseMove(pointer.x, pointer.y);
+    });
+
+    this.canvas.on("mouse:up", (o) => {
+      this.isDown = false;
+    });
+  }
+
+  private async mouseDown(x: number, y: number): Promise<any> {
+    this.isDown = true; //The mouse is being clicked
+
+    if (this.cursorMode !== CursorMode.Draw) {
+      return;
     }
+
+    //Create an object at the point (x,y)
+    this.object = await this.make(x, y);
+
+    //Add the object to the canvas
+    this.canvas.add(this.object);
+
+    //Renders all objects to the canvas
+    this.canvas.renderAll();
   }
 
-  getMiniMap() {
-    if (this.miniMap) {
-      return this.miniMap;
-    } else {
-      return new fabric.Canvas("minimap", {
-        containerClass: "minimap",
-        selection: false,
-      });
+  private mouseMove(x: number, y: number): any {
+    console.log(
+      "--------mouseMove---144---------",
+      this.cursorMode.valueOf(),
+      CursorMode.Draw.valueOf()
+    );
+
+    if (
+      !(this.cursorMode.valueOf() === CursorMode.Draw.valueOf() && this.isDown)
+    ) {
+      return;
     }
+
+    //Use the Resize method from the IObjectDrawer interface
+    this._drawer.resize(this.object, x, y);
+    this.canvas.renderAll();
   }
+
+  private async make(x: number, y: number): Promise<fabric.Object> {
+    return await this._drawer.make(x, y, this.drawerOptions);
+  }
+
+  // getMiniMap() {
+  //   if (this.miniMap) {
+  //     return this.miniMap;
+  //   } else {
+  //     return new fabric.Canvas("minimap", {
+  //       containerClass: "minimap",
+  //       selection: false,
+  //     });
+  //   }
+  // }
 
   mount() {
-    this.attachEvents(window);
+    // this.attachEvents(window);
   }
 
   unmount() {
-    this.destroy();
+    // this.destroy();
   }
-
-  static defaultProps: IEngineProps<Engine> = {
-    width: window.innerWidth,
-    height: window.innerHeight,
-  };
 }

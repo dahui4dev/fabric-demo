@@ -583,44 +583,44 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
     /* --------缩放-------------------------------------------------------------------- */
 
     // hook up the pan and zoom
-    canvas.on("mouse:wheel", function (opt) {
-      let delta = opt.e.deltaY;
-      let zoom = canvas.getZoom();
-      zoom *= 0.999 ** delta;
-      if (zoom > 20) zoom = 20;
-      if (zoom < 0.01) zoom = 0.01;
-      canvas.setZoom(zoom);
-      // updateMiniMapVP();
-      opt.e.preventDefault();
-      opt.e.stopPropagation();
-    });
-    canvas.on("mouse:down", function (opt) {
-      let evt = opt.e;
-      if (evt.altKey === true) {
-        canvas.isDragging = true;
-        canvas.selection = false;
-        canvas.lastPosX = evt.clientX;
-        canvas.lastPosY = evt.clientY;
-
-        canvas.requestRenderAll();
-      }
-    });
-    canvas.on("mouse:move", function (opt) {
-      if (canvas.isDragging) {
-        let e = opt.e;
-        let vpt = canvas.viewportTransform;
-        vpt[4] += e.clientX - canvas.lastPosX;
-        vpt[5] += e.clientY - canvas.lastPosY;
-        canvas.requestRenderAll();
-        // updateMiniMapVP();
-        canvas.lastPosX = e.clientX;
-        canvas.lastPosY = e.clientY;
-      }
-    });
-    canvas.on("mouse:up", function (opt) {
-      canvas.isDragging = false;
-      canvas.selection = true;
-    });
+    // canvas.on("mouse:wheel", function (opt) {
+    //   let delta = opt.e.deltaY;
+    //   let zoom = canvas.getZoom();
+    //   zoom *= 0.999 ** delta;
+    //   if (zoom > 20) zoom = 20;
+    //   if (zoom < 0.01) zoom = 0.01;
+    //   canvas.setZoom(zoom);
+    //   // updateMiniMapVP();
+    //   opt.e.preventDefault();
+    //   opt.e.stopPropagation();
+    // });
+    // canvas.on("mouse:down", function (opt) {
+    //   let evt = opt.e;
+    //   if (evt.altKey === true) {
+    //     canvas.isDragging = true;
+    //     canvas.selection = false;
+    //     canvas.lastPosX = evt.clientX;
+    //     canvas.lastPosY = evt.clientY;
+    //
+    //     canvas.requestRenderAll();
+    //   }
+    // });
+    // canvas.on("mouse:move", function (opt) {
+    //   if (canvas.isDragging) {
+    //     let e = opt.e;
+    //     let vpt = canvas.viewportTransform;
+    //     vpt[4] += e.clientX - canvas.lastPosX;
+    //     vpt[5] += e.clientY - canvas.lastPosY;
+    //     canvas.requestRenderAll();
+    //     // updateMiniMapVP();
+    //     canvas.lastPosX = e.clientX;
+    //     canvas.lastPosY = e.clientY;
+    //   }
+    // });
+    // canvas.on("mouse:up", function (opt) {
+    //   canvas.isDragging = false;
+    //   canvas.selection = true;
+    // });
 
     canvas.renderAll();
   }, []);
