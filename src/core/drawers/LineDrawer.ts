@@ -1,5 +1,5 @@
 import { IObjectDrawer } from "./IObjectDrawer";
-import { DrawingMode } from "./DrawingMode";
+import { DrawingMode } from "../models/DrawingMode";
 import { fabric } from "fabric";
 
 export class LineDrawer implements IObjectDrawer {

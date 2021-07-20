@@ -1,10 +1,24 @@
-import { IEngineProps } from "../types";
-import { Event, uid } from "../utils";
+import { uid } from "../utils";
 import { fabric } from "fabric";
-import { IObjectDrawer } from "./IObjectDrawer";
-import { LineDrawer } from "./LineDrawer";
+
+import {
+  FrameDrawer,
+  IObjectDrawer,
+  LineDrawer,
+  OvalDrawer,
+  RectangleDrawer,
+  TextDrawer,
+  TriangleDrawer,
+} from "../drawers";
+
 import { DrawingMode } from "./DrawingMode";
 import { CursorMode } from "./CursorMode";
+import { LineDisplayComponent } from "../components/LineDisplayComponent";
+import { RectangleDisplayComponent } from "../components/RectangleDisplayComponent";
+import { OvalDisplayComponent } from "../components/OvalDisplayComponent";
+import { TriangleDisplayComponent } from "../components/TriangleDisplayComponent";
+import { TextDisplayComponent } from "../components/TextDisplayComponent";
+import { FrameDisplayComponent } from "../components/FrameDisplayComponent";
 
 const controlRender = (ctx, left, top, styleOverride, fabricObject) => {
   const l = fabric.util.toFixed(fabricObject.left, 1);
@@ -30,7 +44,7 @@ const controlRender = (ctx, left, top, styleOverride, fabricObject) => {
   ctx.restore();
 };
 
-export class Engine {
+export class DrawingEditor {
   id: string;
 
   canvas: fabric.Canvas;
@@ -42,11 +56,12 @@ export class Engine {
   readonly drawerOptions: fabric.IObjectOptions;
   private readonly drawers: IObjectDrawer[];
   private object: fabric.Object;
+  private readonly components: Array<{ id: string; type: string }>;
 
   // props: IEngineProps<Engine>;
   // miniMap: any;
 
-  constructor(props: IEngineProps<Engine>) {
+  constructor() {
     // super(props);
 
     // this.props = {
@@ -61,23 +76,49 @@ export class Engine {
       width: window.innerWidth,
       height: window.innerHeight,
       stopContextMenu: true,
-      selection: false,
+      selection: false, // 选择模式 or 绘画模式
     });
-
-    // this.miniMap = this.getMiniMap();
+    this.isDown = false;
 
     this.cursorMode = CursorMode.Draw;
-    this.drawers = [new LineDrawer()];
+    // 初始化 各种类型 画笔 对象，默认值可通过 options 传递。
+    this.drawers = [
+      new FrameDrawer(),
+      new LineDrawer(),
+      new RectangleDrawer(),
+      new OvalDrawer(),
+      new TriangleDrawer(),
+      new TextDrawer(),
+    ];
     this._drawer = this.drawers[DrawingMode.Line];
     this.drawerOptions = {
       stroke: "black",
       strokeWidth: 1,
       selectable: true,
       strokeUniform: true,
+      fill: "red",
     };
-    this.isDown = false;
 
+    this.components = [];
+    this.addComponents([
+      { id: "frame", type: "frame" },
+      { id: "line", type: "line" },
+      { id: "rect", type: "rect" },
+      { id: "oval", type: "oval" },
+      { id: "tria", type: "tria" },
+      { id: "text", type: "text" },
+    ]);
+
+    // this.miniMap = this.getMiniMap();
     this.initializeCanvasEvents();
+  }
+
+  get drawingMode() {
+    return this._drawer.drawingMode;
+  }
+
+  set drawingMode(value: DrawingMode) {
+    this._drawer = this.drawers[value];
   }
 
   init() {
@@ -97,7 +138,8 @@ export class Engine {
 
   private initializeCanvasEvents() {
     this.canvas.on("selection:created", (o) => {
-      console.log("--------selection:created---100---------", this.cursorMode);
+      // 选择模式
+      // console.log("--------selection:created---100---------", this.cursorMode);
 
       this.cursorMode = CursorMode.Select;
       //sets currently selected object
@@ -109,8 +151,8 @@ export class Engine {
     });
 
     this.canvas.on("selection:cleared", (o) => {
-      console.log("--------selection:cleared---100---------", this.cursorMode);
-      this.cursorMode = CursorMode.Draw;
+      // console.log("--------selection:cleared---100---------", this.cursorMode);
+      // this.cursorMode = CursorMode.Draw;
     });
 
     this.canvas.on("mouse:down", (o) => {
@@ -148,11 +190,11 @@ export class Engine {
   }
 
   private mouseMove(x: number, y: number): any {
-    console.log(
-      "--------mouseMove---144---------",
-      this.cursorMode.valueOf(),
-      CursorMode.Draw.valueOf()
-    );
+    // console.log(
+    //   "--------mouseMove---144---------",
+    //   this.cursorMode.valueOf(),
+    //   CursorMode.Draw.valueOf()
+    // );
 
     if (
       !(this.cursorMode.valueOf() === CursorMode.Draw.valueOf() && this.isDown)
@@ -167,6 +209,70 @@ export class Engine {
 
   private async make(x: number, y: number): Promise<fabric.Object> {
     return await this._drawer.make(x, y, this.drawerOptions);
+  }
+
+  addComponents(componentList: Array<{ id: string; type: string }>) {
+    componentList.forEach((item) => {
+      this.addComponent(item.id, item.type);
+    });
+  }
+
+  addComponent(target: string, component: string) {
+    switch (component) {
+      case "frame":
+        this.components[component] = [new FrameDisplayComponent(target, this)];
+        break;
+      case "line":
+        this.components[component] = [new LineDisplayComponent(target, this)];
+        break;
+      case "rect":
+        this.components[component] = [
+          new RectangleDisplayComponent(target, this),
+        ];
+        break;
+      case "oval":
+        this.components[component] = [new OvalDisplayComponent(target, this)];
+        break;
+      case "tria":
+        this.components[component] = [
+          new TriangleDisplayComponent(target, this),
+        ];
+        break;
+      case "text":
+        this.components[component] = [new TextDisplayComponent(target, this)];
+        break;
+    }
+  }
+
+  componentSelected(componentName: string) {
+    console.log("--------componentSelected---202---------", componentName);
+
+    //Deselect any objects on the canvas that are selected
+    this.canvas.discardActiveObject();
+
+    //FOREACH component in the drawing editor...
+    for (let key in this.components) {
+      // IF this component has a property with the passed-in name
+      // THEN do nothing
+      if (!this.components.hasOwnProperty(key)) continue;
+
+      //OTHERWISE...
+      const obj = this.components[key];
+
+      //IF the component with the passed-in name
+      //IS the component we expect
+      if (obj[0].target === componentName) {
+        //SET the drawing mode to the drawing mode
+        //needed by the component
+        this.drawingMode = obj[0].drawingMode;
+      }
+
+      //IF the method selectedChanged is defined on the component,
+      //THEN call that method
+      if (obj[0].selectedChanged !== undefined) {
+        obj[0].selectedChanged(componentName);
+      }
+    }
   }
 
   // getMiniMap() {

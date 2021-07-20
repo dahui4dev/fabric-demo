@@ -1,5 +1,5 @@
 import { fabric } from "fabric";
-import { DrawingMode } from "./DrawingMode";
+import { DrawingMode } from "../models/DrawingMode";
 
 export interface IObjectDrawer {
   drawingMode: DrawingMode;

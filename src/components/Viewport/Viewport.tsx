@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDesigner } from "../../core/hooks/useDesigner";
 import { fabric } from "fabric";
 import { IDesignerProps } from "../../core/types";
-import { Engine } from "../../core/models/Engine";
+import { DrawingEditor } from "../../core/models/DrawingEditor";
 import _ from "lodash";
 
 const baseNum = 100;
@@ -17,7 +17,7 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
   // const engine = useDesigner();
 
   useEffect(() => {
-    const engine = new Engine({});
+    const engine = new DrawingEditor({});
 
     console.log("-----------26---------", engine);
 
@@ -629,6 +629,8 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
     <>
       <canvas id="c" key="c" />
       <canvas id="minimap" key="minimap" />
+      {/* 占位 */}
+      <div id="toolbar-container"></div>
     </>
   );
 };

@@ -1,15 +1,15 @@
 import { useContext, useMemo } from "react";
-import { Engine } from "../models/Engine";
+import { DrawingEditor } from "../models/DrawingEditor";
 
 import { DesignerContext } from "../context";
 import { isFn } from "../utils";
 
 export interface IEffects {
-  (engine: Engine): void;
+  (engine: DrawingEditor): void;
 }
 
-export const useDesigner = (effect?: IEffects): Engine => {
-  const designer: Engine =
+export const useDesigner = (effect?: IEffects): DrawingEditor => {
+  const designer: DrawingEditor =
     window["__WB_ENGINE__"] || useContext(DesignerContext)?.engine;
 
   useMemo(() => {

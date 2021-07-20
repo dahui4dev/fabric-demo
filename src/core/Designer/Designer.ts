@@ -1,7 +1,7 @@
-import { Engine } from "../models/Engine";
+import { DrawingEditor } from "../models/DrawingEditor";
 
 export const createDesigner = (props: any = {}) => {
-  return new Engine({
+  return new DrawingEditor({
     ...props,
   });
 };

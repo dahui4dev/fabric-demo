@@ -1,11 +1,11 @@
-import { Engine } from "./models/Engine";
+import { DrawingEditor } from "./models/DrawingEditor";
 
 export interface IDesignerProps {
-  engine: Engine;
+  engine: DrawingEditor;
 }
 
 export interface IDesignerContext {
-  engine: Engine;
+  engine: DrawingEditor;
 }
 
 export type IEngineProps<T = Event> = {};
