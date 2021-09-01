@@ -316,6 +316,28 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
       }
     );
 
+    // 多边形
+    let poly2 = new fabric.Polyline(
+      [
+        { x: 0, y: 0 },
+        { x: 300, y: 0 },
+        { x: 300, y: 100 },
+        { x: 500, y: 100 },
+      ],
+      {
+        left: setLeft(3),
+        top: setTop(5),
+        // stroke: "red",
+        // fill: "red",
+        fill: "#41A3EB",
+        stroke: "blue",
+        strokeWidth: 2,
+        strokeLineCap: "butt", // "round", "square",
+        strokeDashArray: [10, 5],
+        perPixelTargetFind: false,
+      }
+    );
+
     // 文本框
     let italicText = new fabric.Textbox("斜体", {
       left: setLeft(1),
@@ -393,17 +415,17 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
     const myImg =
       "https://img14.360buyimg.com/imagetools/jfs/t1/131932/17/19158/386467/5fcf7236E760a0923/e2ca061974b3fc32.jpg";
 
-    fabric.Image.fromURL(myImg, (oImg) => {
-      oImg.scale(0.3).set({
-        left: setLeft(3),
-        top: setTop(6),
-        backgroundColor: "orange",
-        width: oImg._element.naturalWidth,
-        height: oImg._element.naturalHeight,
-      });
-
-      canvas.add(oImg);
-    });
+    // fabric.Image.fromURL(myImg, (oImg) => {
+    //   oImg.scale(0.3).set({
+    //     left: setLeft(3),
+    //     top: setTop(6),
+    //     backgroundColor: "orange",
+    //     width: oImg._element.naturalWidth,
+    //     height: oImg._element.naturalHeight,
+    //   });
+    //
+    //   canvas.add(oImg);
+    // });
 
     // add all to canvas
     canvas.add(
@@ -426,6 +448,7 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
       // line3,
       poly,
       poly1,
+      poly2,
       italicText,
       anotherItalicText,
       underlineText,
@@ -456,7 +479,7 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
       return c;
     }
 
-    function makeLine(coords) {
+    function makeLine(coords: number[] | undefined) {
       return new fabric.Line(coords, {
         fill: "red",
         stroke: "red",
@@ -485,14 +508,14 @@ export const Viewport: React.FC<IDesignerProps> = (props) => {
       makeCircle(line6.get("x2"), line6.get("y2"), line6)
     );
 
-    canvas.on("object:moving", function (e) {
-      var p = e.target;
-      p.line1 && p.line1.set({ x2: p.left, y2: p.top });
-      p.line2 && p.line2.set({ x1: p.left, y1: p.top });
-      p.line3 && p.line3.set({ x1: p.left, y1: p.top });
-      p.line4 && p.line4.set({ x1: p.left, y1: p.top });
-      canvas.renderAll();
-    });
+    // canvas.on("object:moving", function (e) {
+    //   var p = e.target;
+    //   p.line1 && p.line1.set({ x2: p.left, y2: p.top });
+    //   p.line2 && p.line2.set({ x1: p.left, y1: p.top });
+    //   p.line3 && p.line3.set({ x1: p.left, y1: p.top });
+    //   p.line4 && p.line4.set({ x1: p.left, y1: p.top });
+    //   canvas.renderAll();
+    // });
 
     // initMinimap();
     // updateMiniMapVP();
